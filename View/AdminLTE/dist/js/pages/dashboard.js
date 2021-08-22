@@ -48,7 +48,7 @@ $(function () {
   })
 
   /* jQueryKnob */
-  $('.knob').knob()
+  // $('.knob').knob()
 
   // jvectormap data
   var visitorsData = {
@@ -91,9 +91,9 @@ $(function () {
     // }
   // })
 
-  $('#world-map').vectorMap({
+  // $('#world-map').vectorMap({
     
-  })
+  // })
 
   // Sparkline charts
   var sparkline1 = new Sparkline($('#sparkline-1')[0], { width: 80, height: 50, lineColor: '#92c1dc', endColor: '#ebf4f9' })
@@ -170,11 +170,11 @@ $(function () {
 
   // This will get the first returned node in the jQuery collection.
   // eslint-disable-next-line no-unused-vars
-  var salesChart = new Chart(salesChartCanvas, { // lgtm[js/unused-local-variable]
-    type: 'line',
-    data: salesChartData,
-    options: salesChartOptions
-  })
+  // var salesChart = new Chart(salesChartCanvas, { // lgtm[js/unused-local-variable]
+  //   type: 'line',
+  //   data: salesChartData,
+  //   options: salesChartOptions
+  // })
 
   // Donut Chart
   var pieChartCanvas = $('#sales-chart-canvas').get(0).getContext('2d')
@@ -207,124 +207,198 @@ $(function () {
     options: pieOptions
   })
 
+  var params = new URLSearchParams("")
+  params.append("locationIds", "2")
+  params.append("fromDate", "15/8/2021 00:00:00")
+
+  getDataFromServer("soil-humidity/filter", params)
+    .then(function(json) {
+      var dataSet = []
+      for (var obj of json) {
+        dataSet.push({ x: getDateFromString(obj.created_date), y: obj.value })
+      }
+      setGraphics(salesChartCanvas, dataSet, linesGraphChartOptions, "Humedad de suelo")
+    }, function(error) {
+      console.log(error)
+    })
+
   // Sales graph chart
   var linesGraphChartCanvas = $('#line-chart').get(0).getContext('2d')
-  // $('#revenue-chart').get(0).getContext('2d');
+  // $('#revenue-chart').get(0).getContext('2d')
 
-  var linesGraphChartOptions = {
-    maintainAspectRatio: false,
-    responsive: true,
-    legend: {
-      display: false
-    },
-    scales: {
-      xAxes: [{
-        ticks: {
-          fontColor: '#efefef',
-          autoSkip: true,
-          maxTicksLimit: 10
-        },
-        gridLines: {
-          display: false,
-          color: '#efefef',
-          drawBorder: false
-        }
-      }],
-      yAxes: [{
-        ticks: {
-          fontColor: '#efefef',
-          suggestedMin: 0,
-          suggestedMax: 30
-        },
-        gridLines: {
-          display: true,
-          color: '#aaaaaa',
-          drawBorder: false
-        }
-      }],
-      y: {
-        suggestedMin: 0,
-        suggestedMax: 30
-      }
-    }
-  }
 
-  // This will get the first returned node in the jQuery collection.
-  // eslint-disable-next-line no-unused-vars
-  // var salesGraphChart = new Chart(linesGraphChartCanvas, { // lgtm[js/unused-local-variable]
-  //   type: 'line',
-  //   data: linesGraphChartData,
-  //   options: linesGraphChartOptions
-  // })
-
-  getDataFromServer([1], "17/8/2021 8:00:00", "17/8/2021 22:36:55", null, null, linesGraphChartOptions, linesGraphChartCanvas)
-  // getDataFromServer([1], null, null, null, null, linesGraphChartOptions, linesGraphChartCanvas)
 })
 
-function getDataFromServer(locationIds = null, fromDate = null, toDate = null, fromValue = null, toValue = null, chartOpts, chartCanvasId) {
-  var body = {
-    "locationIds": locationIds,
-    "fromDate": fromDate,
-    "toDate": toDate,
-    "fromValue": fromValue,
-    "toValue": toValue
-  }
-
-  // fetch('http:127.0.0.1:5000/ambient-temperature/', {
-  //   method : 'POST',
-  //   body : JSON.stringify(body) 
-  // }).then(function(responseObj) {
-	// 	console.log(responseObj);
-	// });
-
-  var requestURL = 'http:127.0.0.1:5000/ambient-temperature/'; 
-
-  var request = new XMLHttpRequest(); // create http request
-
-  request.onreadystatechange = function() {
-    if (request.readyState == 4 && request.status == 200) {
-      var json = JSON.parse(request.responseText); 
-      var labels = []
-      var data = []
-
-      // console.log(json)
-
-      for (obj of json) {
-        labels.push(obj.created_date)
-        data.push(obj.value)
+var linesGraphChartCanvas = $('#line-chart').get(0).getContext('2d')
+var linesGraphChartOptions = {
+  maintainAspectRatio: false,
+  responsive: true,
+  legend: {
+    display: false
+  },
+  scales: {
+    x: {
+      type: 'time',
+      time: {
+        unit: 'day',
+        round: 'minutes',
+        displayFormat: {
+          day: "MMM DD"
+        }
+      },
+      ticks: {
+        fontColor: '#efefef',
+        autoSkip: true
+      },
+    },
+    y: {
+      ticks: {
+        fontColor: '#efefef',
+        suggestedMin: 0,
+        suggestedMax: 30
+      },
+      gridLines: {
+        display: true,
+        color: '#aaaaaa',
+        drawBorder: false
       }
-
-      // console.log(labels)
-      // console.log(data)
-
-      var chartData = {
-        labels: labels,
-        datasets: [
-          {
-            label: 'Digital Goods',
-            fill: false,
-            borderWidth: 2,
-            lineTension: 0,
-            spanGaps: true,
-            borderColor: '#efefef',
-            pointRadius: false,
-            pointHoverRadius: 7,
-            pointColor: '#efefef',
-            pointBackgroundColor: '#efefef',
-            data: data
-          }
-        ]
-      }
-
-      new Chart(chartCanvasId, {
-        type: 'line',
-        options: chartOpts,
-        data: chartData
-      })
     }
   }
+}
 
-  request.open('POST', requestURL);
-  request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-  request.send(JSON.stringify(body)); // send the request
+$('#temp_button').on('click', function(){
+  var params = new URLSearchParams("")
+  params.append("locationIds", "1")
+  params.append("fromDate", "15/8/2021 00:00:00")
+
+  getDataFromServer("ambient-temperature/filter", params)
+    .then(function(json) {
+      var dataSet = []
+      for (obj of json) 
+        dataSet.push({ x: getDateFromString(obj.created_date), y: obj.value })
+      setGraphics(linesGraphChartCanvas, dataSet, linesGraphChartOptions, "Temperatura ambiente")
+    }, function(error) {
+      console.log(error)
+    })
+})
+
+$('#hum_button').on('click', function(){
+  var params = new URLSearchParams("")
+  params.append("locationIds", "1")
+  params.append("fromDate", "15/8/2021 00:00:00")
+
+  getDataFromServer("ambient-humidity/filter", params)
+    .then(function(json) {
+      var dataSet = []
+      for (obj of json) 
+        dataSet.push({ x: getDateFromString(obj.created_date), y: obj.value })
+      setGraphics(linesGraphChartCanvas, dataSet, linesGraphChartOptions, "Humedad ambiente")
+    }, function(error) {
+      console.log(error)
+    })
+})
+
+
+// function getDataFromServer(locationIds = null, fromDate = null, toDate = null, fromValue = null, toValue = null, chartOpts, chartCanvasId) {
+function getDataFromServer(url = "", filterParams = null) {
+
+  var promise = new Promise(function(resolve, reject) {
+    var requestURL = 'http:127.0.0.1:5000/' + url + "?" + filterParams.toString();
+    var request = new XMLHttpRequest() // create http request
+    request.open('GET', requestURL)
+    request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
+    request.onload = function() {
+      if (request.status == 200) {
+        resolve(JSON.parse(request.responseText))
+      } else {
+        reject(Error(request.statusText))
+      }
+      request.onerror = function() {
+        reject(Error("Error fetching JSON data"))
+      }
+    }
+    request.send() // send the request
+  })
+
+  return promise
+}
+
+function getDateFromString(dateString) {
+  var dateTime = dateString.split(" ")
+  var date = dateTime[0].split("/")    // [0]dia [1]mes  [2]año
+  var time = dateTime[1].split(":")    // [0]hr  [1]min  [2]seg
+   return new Date(date[2], date[1]-1, date[0], time[0], time[1], time[2])
+}
+
+function setGraphics(chartCanvasId, data, chartOpts, label) {
+
+  $('#left-knob').attr('value', indexOfMin(data)[1])
+  $('#center-knob').attr('value', getAverage(data))
+  $('#right-knob').attr('value', indexOfMax(data)[1])
+  $('.knob').knob()
+
+  var chartData = {
+    datasets: [
+      {
+        label: label,
+        fill: true,
+        borderWidth: 2,
+        lineTension: 0,
+        spanGaps: false,
+        borderColor: '#efefef',
+        pointRadius: false,
+        pointHoverRadius: 7,
+        pointColor: '#efefef',
+        pointBackgroundColor: '#efefef',
+        data: data
+      }
+    ]
+  }
+
+  return new Chart(chartCanvasId, {
+    type: 'line',
+    options: chartOpts,
+    data: chartData
+  })
+}
+
+function getAverage(dataArray) {
+  var total = 0
+  for (num of dataArray) {
+    total += num.y
+  }
+  return total / dataArray.length
+}
+
+function indexOfMax(arr) {
+  if (arr.length === 0) {
+      return -1;
+  }
+  var max = arr[0].y;
+  var maxIndex = 0;
+  for (var i = 1; i < arr.length; i++) {
+      if (arr[i].y > max) {
+          maxIndex = i;
+          max = arr[i].y;
+      }
+  }
+  return [maxIndex, max];
+}
+
+function indexOfMin(arr) {
+  if (arr.length === 0) {
+      return -1;
+  }
+
+  var min = arr[0].y;
+  var minIndex = 0;
+
+  for (var i = 1; i < arr.length; i++) {
+      if (arr[i].y < min) {
+          minIndex = i
+          min = arr[i].y
+      }
+  }
+
+  return [minIndex, min]
 }

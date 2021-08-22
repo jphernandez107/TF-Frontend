@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
   <!-- Tempusdominus Bootstrap 4 -->
   <link rel="stylesheet" href="AdminLTE/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
-  <!-- iCheck -->
+  <!-- iCheck sdad -->
   <link rel="stylesheet" href="AdminLTE/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
   <!-- JQVMap -->
   <link rel="stylesheet" href="AdminLTE/plugins/jqvmap/jqvmap.min.css">
@@ -101,8 +101,16 @@
       <!-- Sidebar Menu -->
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-          <!-- Add icons to the links using the .nav-icon class
-               with font-awesome or any other icon font library -->
+          <!-- Add icons to the links using the .nav-icon class with font-awesome or any other icon font library -->
+          <li class="nav-item">
+            <a href="AdminLTE/pages/widgets.html" class="nav-link">
+              <i class="nav-icon fas fa-th"></i>
+              <p>
+                General
+                <span class="right badge badge-danger">Nuevo</span>
+              </p>
+            </a>
+          </li>
           <li class="nav-item menu-open">
             <a href="#" class="nav-link active">
               <i class="nav-icon fas fa-tachometer-alt"></i>
@@ -128,15 +136,6 @@
                 </a>
               </li>
             </ul>
-          </li>
-          <li class="nav-item">
-            <a href="AdminLTE/pages/widgets.html" class="nav-link">
-              <i class="nav-icon fas fa-th"></i>
-              <p>
-                General
-                <span class="right badge badge-danger">Nuevo</span>
-              </p>
-            </a>
           </li>
           <li class="nav-item">
             <a href="#" class="nav-link">
@@ -237,10 +236,10 @@
           <!-- Left col -->
           <section class="col-lg-7 connectedSortable">
             <!-- Custom tabs (Charts with tabs) Grafico de temperatura ambiente-->
-            <div class="card">
+            <div class="card bg-gradient-info">
               <div class="card-header">
                 <h3 class="card-title">
-                  <i class="fas fa-temperature-low mr-1"></i> Temperatura ambiente
+                  <i class="fas fa-temperature-low mr-1"></i> Humedad de suelo
                 </h3>
                 <div class="card-tools">
                   <ul class="nav nav-pills ml-auto">
@@ -271,7 +270,7 @@
             <div class="card bg-gradient-info">
               <div class="card-header border-0">
                 <h3 class="card-title">
-                  <i class="fas fa-th mr-1"></i> Humedad de suelo
+                  <i class="fas fa-th mr-1"></i> Temperatura ambiente
                 </h3>
 
                 <div class="card-tools">
@@ -284,8 +283,8 @@
                       <i class="fas fa-stream"></i>
                     </button>
                     <div class="dropdown-menu" role="menu">
-                      <a href="#" class="dropdown-item">Temperaturas</a>
-                      <a href="#" class="dropdown-item">Humedades</a>
+                      <button class="dropdown-item" id="temp_button">Temperaturas</button>
+                      <button class="dropdown-item" id="hum_button">Humedad ambiente</button>
                       <div class="dropdown-divider"></div>
                       <a href="#" class="dropdown-item">Salir</a>
                     </div>
@@ -302,24 +301,24 @@
               <div class="card-footer bg-transparent">
                 <div class="row">
                   <div class="col-4 text-center">
-                    <input type="text" class="knob" data-readonly="true" value="20" data-width="60" data-height="60"
-                           data-fgColor="#39CCCC">
-
-                    <div class="text-white">Sector A</div>
+                    <div class="text-white">Mínima</div>
+                    <input id="left-knob" type="text" class="knob" data-readonly="true" value="80" data-width="60" data-height="60"
+                          data-angleOffset=-125 data-angleArc=250 data-fgColor="#39CCCC">
+                    <div id="left-knob-bottom-text" class="text-white"></div>
                   </div>
                   <!-- ./col -->
                   <div class="col-4 text-center">
-                    <input type="text" class="knob" data-readonly="true" value="50" data-width="60" data-height="60"
-                           data-fgColor="#39CCCC">
-
-                    <div class="text-white">Sector B</div>
+                    <div class="text-white">Promedio</div>
+                    <input id="center-knob" type="text" class="knob" data-readonly="true" value="50" data-width="60" data-height="60"
+                          data-angleOffset=-125 data-angleArc=250 data-fgColor="#39CCCC">
+                    <div id="center-knob-bottom-text" class="text-white"></div>
                   </div>
                   <!-- ./col -->
                   <div class="col-4 text-center">
-                    <input type="text" class="knob" data-readonly="true" value="30" data-width="60" data-height="60"
-                           data-fgColor="#39CCCC">
-
-                    <div class="text-white">Sector C</div>
+                    <div class="text-white">Máxima</div>
+                    <input id="right-knob" type="text" class="knob" data-readonly="true" value="30" data-width="60" data-height="60"
+                          data-angleOffset=-125 data-angleArc=250 data-fgColor="#39CCCC">
+                    <div id="right-knob-bottom-text" class="text-white"></div>
                   </div>
                   <!-- ./col -->
                 </div>
@@ -454,7 +453,8 @@
 <!-- Bootstrap 4 -->
 <script src="AdminLTE/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- ChartJS -->
-<script src="AdminLTE/plugins/chart.js/Chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 <!-- Sparkline -->
 <script src="AdminLTE/plugins/sparklines/sparkline.js"></script>
 <!-- JQVMap -->
